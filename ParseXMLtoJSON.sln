@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33502.350
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseXMLtoJSON", "ParseXMLtoJSON.csproj", "{6D59C68D-7667-4847-841B-07BA9D08713F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D59C68D-7667-4847-841B-07BA9D08713F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D59C68D-7667-4847-841B-07BA9D08713F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D59C68D-7667-4847-841B-07BA9D08713F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D59C68D-7667-4847-841B-07BA9D08713F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5C1DEB7-ED25-4B93-98B2-820C05634990}
+	EndGlobalSection
+EndGlobal
