@@ -7,6 +7,13 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using DotLiquid;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using System.Linq;
+using System.Xml;
+using ParseXMLtoJSON.Helpers;
+using System.Reflection;
 
 namespace ParseXMLtoJSON
 {
@@ -17,55 +24,47 @@ namespace ParseXMLtoJSON
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-            string name = req.Query["name"];
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-            Root root = new();
-            string jsonResponse = JsonConvert.SerializeObject(root);
-            return new OkObjectResult(jsonResponse);
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "ParseXMLtoJSON.template.liquid";
+                string result;
+
+                log.LogInformation("C# HTTP trigger function processed a request.");
+                string name = req.Query["name"];
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+                HelperMethods helperMethods = new();
+
+                XElement xmlDocumentWithoutNs = helperMethods.RemoveAllNamespaces(XElement.Parse(requestBody));
+                string newxml = xmlDocumentWithoutNs.ToString();
+                XDocument doc = XDocument.Parse(newxml);
+                string json = JsonConvert.SerializeXNode(doc);
+
+                log.LogInformation("Initial json serialze completed.");
+
+                var modelAsMap = JsonConvert.DeserializeObject<IDictionary<string, object>>(json, new DictionaryConverter());
+
+
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    result = reader.ReadToEnd();
+                }
+
+
+                var template = Template.Parse(result);
+
+                var rendered = template.Render(Hash.FromDictionary(modelAsMap));
+
+                log.LogInformation("Data remapped to JSON successfully");
+
+                return new OkObjectResult(rendered);
+            }
+            catch (Exception ex) 
+            {
+                log.LogError("Failed to parse JSON from XML [{0}]", ex);
+            }
         }
     }
-
-    public class Document
-    {
-        public Properties properties { get; set; }
-    }
-
-    public class Properties
-    {
-        public Properties()
-        {
-            UDIFromDG = new UDIFromDG();
-            Document = new Document();
-            DocumentType = "BP5PP";
-        }
-
-        public UDIFromDG UDIFromDG { get; set; }
-        public Document Document { get; set; }
-        public string DocumentType { get; set; }
-    }
-
-    public class Root
-    {
-        public Root()
-        {
-            this.properties = new Properties();
-        }
-
-        public Properties properties { get; set; }
-    }
-
-    public class UDIFromDG
-    {
-        public UDIFromDG()
-        {
-            this.properties = null;
-        }
-
-        public Properties properties { get; set; }
-    }
-
-
 }
