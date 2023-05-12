@@ -64,6 +64,7 @@ namespace ParseXMLtoJSON
             catch (Exception ex) 
             {
                 log.LogError("Failed to parse JSON from XML [{0}]", ex);
+                throw;
             }
         }
     }
