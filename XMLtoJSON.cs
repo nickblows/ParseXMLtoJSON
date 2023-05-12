@@ -59,7 +59,7 @@ namespace ParseXMLtoJSON
 
                 log.LogInformation("Data remapped to JSON successfully");
 
-                return new OkObjectResult(rendered);
+                return new JsonResult(rendered);
             }
             catch (Exception ex) 
             {
